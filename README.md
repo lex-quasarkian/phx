@@ -1,12 +1,12 @@
-# 🚀 Enterprise Shop & Logistics Dashboard
+# 🚀 phoenix-shop-warehouse
 
-A real-time enterprise e-commerce platform and inventory logistics tracking system built with Elixir, Phoenix, LiveView, Ecto, and Bootstrap.
+A real-time e-commerce platform and inventory logistics tracking system built with Elixir, Phoenix, LiveView, Ecto, and Bootstrap.
 
 ---
 
 ## 📋 Overview
 
-**Enterprise Shop** is a distributed retail and supply chain simulation application. It demonstrates modern Elixir/OTP patterns by connecting retail stores with central distribution warehouses. The application features a real-time storefront, cart checkout flow with database lock-based race condition prevention, and a visual logistics dashboard that tracks stock levels across the supply chain dynamically.
+**phoenix-shop-warehouse** is a distributed retail and supply chain simulation application. It demonstrates modern Elixir/OTP patterns by connecting retail stores with central distribution warehouses. The application features a real-time storefront, cart checkout flow with database lock-based race condition prevention, and a visual logistics dashboard that tracks stock levels across the supply chain dynamically.
 
 ---
 
