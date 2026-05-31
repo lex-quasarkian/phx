@@ -67,7 +67,7 @@ defmodule EnterpriseShopWeb.WarehouseLive.Dashboard do
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash} current_scope={@current_scope}>
+    <Layouts.app flash={@flash}>
       <div class="container py-4">
         <!-- Header -->
         <div class="row align-items-center mb-4 pb-3 border-bottom">
