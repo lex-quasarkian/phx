@@ -35,3 +35,6 @@ config :phoenix, :plug_init_mode, :runtime
 # Enable helpful, but potentially expensive runtime checks
 config :phoenix_live_view,
   enable_expensive_runtime_checks: true
+
+# Configure HTTP client mock for tests
+config :enterprise_shop, :http_client, EnterpriseShop.HTTPClientMock
