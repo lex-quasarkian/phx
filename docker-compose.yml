@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: enterprise_shop_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: enterprise_shop_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d enterprise_shop_dev"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: enterprise_shop_web
+    ports:
+      - "4000:4000"
+    environment:
+      - DATABASE_URL=ecto://postgres:postgres@db/enterprise_shop_dev
+      - SECRET_KEY_BASE=c7y3SdV8ksCSYRvoZnXvRFiOqt3eGYbzOeua9qk573wYHiNkD16rGbzBrlaSrJnp
+      - PHX_HOST=localhost
+      - PORT=4000
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

@@ -1,0 +1,24 @@
+# Build artifacts and temp files
+/_build
+/deps
+/cover
+/.elixir_ls
+/.git
+/assets/node_modules
+
+# Ecto and dev/test environment databases
+/*.db
+/*.db-journal
+/*.db-shm
+/*.db-wal
+
+# Static assets compiled locally
+/priv/static/assets
+
+# Docker / Kubernetes files
+/Dockerfile
+/docker-compose.yml
+
+# Environment variable files
+.env
+.env.*
