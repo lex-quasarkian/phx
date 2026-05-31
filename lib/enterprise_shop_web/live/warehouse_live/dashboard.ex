@@ -120,6 +120,7 @@ defmodule EnterpriseShopWeb.WarehouseLive.Dashboard do
 
         %{store: s, items: s_items}
       end)
+      |> Enum.sort_by(& &1.store.id)
 
     # Calculate total product quantities for each location
     warehouses_totals =
@@ -248,30 +249,34 @@ defmodule EnterpriseShopWeb.WarehouseLive.Dashboard do
               <!-- SVG Connection Lines -->
               <svg class="position-absolute w-100 h-100" style="top:0; left:0; pointer-events: none;">
                 <!-- Dotted connection from Center (50%, 50%) to Store 1 (30%, 75%) -->
-                <line
-                  x1="50%"
-                  y1="50%"
-                  x2="30%"
-                  y2="75%"
-                  stroke="#3b82f6"
-                  stroke-width="2"
-                  stroke-dasharray="6,4"
-                  opacity="0.6"
-                />
+                <%= if Enum.at(@stores_data, 0) do %>
+                  <line
+                    x1="50%"
+                    y1="50%"
+                    x2="30%"
+                    y2="75%"
+                    stroke="#3b82f6"
+                    stroke-width="2"
+                    stroke-dasharray="6,4"
+                    opacity="0.6"
+                  />
+                <% end %>
                 <!-- Dotted connection from Center (50%, 50%) to Store 2 (75%, 30%) -->
-                <line
-                  x1="50%"
-                  y1="50%"
-                  x2="75%"
-                  y2="30%"
-                  stroke="#10b981"
-                  stroke-width="2"
-                  stroke-dasharray="6,4"
-                  opacity="0.6"
-                />
+                <%= if Enum.at(@stores_data, 1) do %>
+                  <line
+                    x1="50%"
+                    y1="50%"
+                    x2="75%"
+                    y2="30%"
+                    stroke="#10b981"
+                    stroke-width="2"
+                    stroke-dasharray="6,4"
+                    opacity="0.6"
+                  />
+                <% end %>
               </svg>
               
-    <!-- Central Warehouse Marker (Central Distribution Center - ID 1) -->
+    <!-- Central Warehouse Marker (Central Distribution Center) -->
               <%= for %{warehouse: w} <- @warehouses_data do %>
                 <div
                   class="position-absolute translate-middle"
@@ -300,8 +305,9 @@ defmodule EnterpriseShopWeb.WarehouseLive.Dashboard do
                 </div>
               <% end %>
               
-    <!-- Store 1 Marker (Downtown Store - ID 1) -->
-              <%= for %{store: s} <- @stores_data |> Enum.filter(&(&1.store.id == 1)) do %>
+    <!-- Store 1 Marker (First Store in List) -->
+              <%= if store_data1 = Enum.at(@stores_data, 0) do %>
+                <% %{store: s} = store_data1 %>
                 <div
                   class="position-absolute translate-middle"
                   style="top: 75%; left: 30%; text-align: center; z-index: 10;"
@@ -336,8 +342,9 @@ defmodule EnterpriseShopWeb.WarehouseLive.Dashboard do
                 </div>
               <% end %>
               
-    <!-- Store 2 Marker (Uptown Store - ID 2) -->
-              <%= for %{store: s} <- @stores_data |> Enum.filter(&(&1.store.id == 2)) do %>
+    <!-- Store 2 Marker (Second Store in List) -->
+              <%= if store_data2 = Enum.at(@stores_data, 1) do %>
+                <% %{store: s} = store_data2 %>
                 <div
                   class="position-absolute translate-middle"
                   style="top: 30%; left: 75%; text-align: center; z-index: 10;"
