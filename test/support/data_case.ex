@@ -24,6 +24,7 @@ defmodule EnterpriseShop.DataCase do
       import Ecto.Changeset
       import Ecto.Query
       import EnterpriseShop.DataCase
+      import EnterpriseShop.Factory
     end
   end
 

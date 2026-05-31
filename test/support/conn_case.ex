@@ -28,6 +28,7 @@ defmodule EnterpriseShopWeb.ConnCase do
       import Plug.Conn
       import Phoenix.ConnTest
       import EnterpriseShopWeb.ConnCase
+      import EnterpriseShop.Factory
     end
   end
 
