@@ -22,6 +22,44 @@ A real-time e-commerce platform and inventory logistics tracking system built wi
 
 ---
 
+## 🏢 Business Domain & Partnering Rules
+
+The application models a collaborative supply chain network consisting of **Customers**, **Retail Stores (Shops)**, and **Warehouses** operating under a parent **Enterprise**:
+
+```mermaid
+graph TD
+    Customer[Customer] -->|1. Places Order| Store[Retail Store]
+    Store -->|2a. Checkout Ok / Low Stock| AsyncRestock[Asynchronous Restock Request]
+    Store -->|2b. Out of Stock / Fail| SyncRestock[Immediate Restock Request]
+    AsyncRestock -->|3. POST /api/v1/.../restock| WarehouseServer[WarehouseServer GenServer]
+    SyncRestock -->|3. POST /api/v1/.../restock| WarehouseServer
+    WarehouseServer -->|4. Atomically Deducts Bulk Stock| WarehouseDB[(Warehouse Inventory)]
+    WarehouseServer -->|5. Adds Store Stock & Broadcasts| StoreDB[(Store Inventory)]
+```
+
+### 1. Customers
+*   Customers interact with a single retail store location at a time.
+*   Carts are maintained in-memory on the server (`CartRegistry`) keyed by the user's session ID.
+*   Upon checkout, the purchase transaction attempts to deduct stock from the selected store.
+
+### 2. Retail Stores (Shops)
+*   Each store holds its own inventory of products.
+*   Each store specifies a `restock_threshold` (e.g., 5 units) representing the minimum healthy stock level.
+*   **Deduction & Locks**: Inventory updates use database row locks (`FOR UPDATE`) to prevent concurrent purchases from double-selling.
+*   **Stock replenishment triggers**:
+    *   **Low Stock Trigger**: If a purchase is successful but the remaining stock drops below the `restock_threshold`, an asynchronous task triggers a restock request.
+    *   **Out of Stock Trigger**: If a purchase fails due to insufficient stock, the checkout transaction rolls back. An immediate restock request is triggered for that product to ensure it becomes available for future attempts.
+
+### 3. Warehouses
+*   Warehouses hold wholesale bulk quantities of items.
+*   A store can only request restocking from a warehouse belonging to the same parent **Enterprise** (`enterprise_id`).
+*   **Serialized Requests**: To prevent race conditions from concurrent replenishment orders, all restock requests for a given warehouse are serialized. They run through a dedicated `WarehouseServer` GenServer, registered under `EnterpriseShop.WarehouseRegistry` by the warehouse's ID.
+*   **Restocking Policy**:
+    *   If the warehouse has enough stock to cover the request, the GenServer executes a transaction that deducts the quantity from the warehouse and adds it to the store, then broadcasts the update via PubSub.
+    *   If the warehouse has insufficient stock, the transaction rolls back with `:insufficient_warehouse_stock` and the restock request fails.
+
+---
+
 ## 🏗️ Architecture & Design Principles
 
 The application is structured using **Clean Domain-Driven Design (DDD)** concepts:
