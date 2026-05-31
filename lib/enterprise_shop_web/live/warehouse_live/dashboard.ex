@@ -91,9 +91,24 @@ defmodule EnterpriseShopWeb.WarehouseLive.Dashboard do
         %{store: s, items: s_items}
       end)
 
+    # Calculate total product quantities for each location
+    warehouses_totals =
+      Map.new(warehouses_data, fn %{warehouse: w, items: items} ->
+        total = Enum.reduce(items, 0, fn item, acc -> acc + item.quantity end)
+        {w.id, total}
+      end)
+
+    stores_totals =
+      Map.new(stores_data, fn %{store: s, items: items} ->
+        total = Enum.reduce(items, 0, fn item, acc -> acc + item.quantity end)
+        {s.id, total}
+      end)
+
     socket
     |> assign(:warehouses_data, warehouses_data)
     |> assign(:stores_data, stores_data)
+    |> assign(:warehouses_totals, warehouses_totals)
+    |> assign(:stores_totals, stores_totals)
   end
 
   @impl true
@@ -116,6 +131,97 @@ defmodule EnterpriseShopWeb.WarehouseLive.Dashboard do
               <span class="spinner-grow spinner-grow-sm me-2" role="status" aria-hidden="true"></span>
               Live Sync Enabled
             </span>
+          </div>
+        </div>
+
+        <!-- Interactive Map Section -->
+        <div class="card border-0 shadow-lg mb-5 text-white overflow-hidden" style="background: linear-gradient(135deg, #111827 0%, #1f2937 100%); min-height: 380px; position: relative; border-radius: 16px;">
+          <!-- Map Grid Overlay -->
+          <div class="position-absolute inset-0 opacity-10" style="background-image: radial-gradient(#ffffff 1px, transparent 1px); background-size: 20px 20px; top:0; left:0; width:100%; height:100%;"></div>
+          
+          <div class="card-body p-4 d-flex flex-column justify-content-between position-relative" style="z-index: 2;">
+            <div class="mb-3">
+              <h4 class="fw-bold mb-1 d-flex align-items-center">
+                <.icon name="hero-map" class="w-6 h-6 text-primary me-2" />
+                Live Logistics & Fulfillment Map
+              </h4>
+              <p class="text-muted small mb-0">Visualizing supply chains, replenishment routes, and stock levels.</p>
+            </div>
+
+            <!-- Visual Map Canvas -->
+            <div class="flex-grow-1 w-100 my-3" style="position: relative; height: 260px; background: rgba(255, 255, 255, 0.02); border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.05); overflow: hidden;">
+              <!-- SVG Connection Lines -->
+              <svg class="position-absolute w-100 h-100" style="top:0; left:0; pointer-events: none;">
+                <!-- Dotted connection from Center (50%, 50%) to Store 1 (30%, 75%) -->
+                <line x1="50%" y1="50%" x2="30%" y2="75%" stroke="#3b82f6" stroke-width="2" stroke-dasharray="6,4" opacity="0.6" />
+                <!-- Dotted connection from Center (50%, 50%) to Store 2 (75%, 30%) -->
+                <line x1="50%" y1="50%" x2="75%" y2="30%" stroke="#10b981" stroke-width="2" stroke-dasharray="6,4" opacity="0.6" />
+              </svg>
+
+              <!-- Central Warehouse Marker (Central Distribution Center - ID 1) -->
+              <%= for %{warehouse: w} <- @warehouses_data do %>
+                <div class="position-absolute translate-middle" style="top: 50%; left: 50%; text-align: center; z-index: 10;">
+                  <!-- Pulse Ring -->
+                  <span class="position-absolute translate-middle start-50 top-50 spinner-grow text-primary opacity-25" style="width: 50px; height: 50px; pointer-events: none;"></span>
+                  <!-- Pin -->
+                  <div class="d-inline-flex flex-column align-items-center">
+                    <div class="badge bg-primary text-white p-2 rounded-circle shadow-sm border border-light d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                      <.icon name="hero-archive-box" class="w-6 h-6" />
+                    </div>
+                    <% wh_total = Map.get(@warehouses_totals, w.id, 0) %>
+                    <span class="badge bg-dark mt-1 text-white shadow-sm font-monospace border border-secondary">
+                      <%= if wh_total >= 100, do: "100+", else: "#{wh_total}" %>
+                    </span>
+                    <span class="small fw-bold text-white-50 mt-1 d-block">{w.name}</span>
+                  </div>
+                </div>
+              <% end %>
+
+              <!-- Store 1 Marker (Downtown Store - ID 1) -->
+              <%= for %{store: s} <- @stores_data |> Enum.filter(&(&1.store.id == 1)) do %>
+                <div class="position-absolute translate-middle" style="top: 75%; left: 30%; text-align: center; z-index: 10;">
+                  <!-- Pulse Ring -->
+                  <% total = Map.get(@stores_totals, s.id, 0) %>
+                  <% pulse_class = if total < s.restock_threshold * 2, do: "text-warning", else: "text-success" %>
+                  <span class={["position-absolute translate-middle start-50 top-50 spinner-grow opacity-25", pulse_class]} style="width: 40px; height: 40px; pointer-events: none;"></span>
+                  <div class="d-inline-flex flex-column align-items-center">
+                    <div class={["badge text-white p-2 rounded-circle shadow-sm border border-light d-flex align-items-center justify-content-center", if(total < 5, do: "bg-danger", else: "bg-success")]} style="width: 38px; height: 38px;">
+                      <.icon name="hero-building-storefront" class="w-5 h-5" />
+                    </div>
+                    <span class="badge bg-dark mt-1 text-white shadow-sm font-monospace border border-secondary">
+                      <%= if total >= 100, do: "100+", else: "#{total}" %>
+                    </span>
+                    <span class="small fw-bold text-white-50 mt-1 d-block">{s.name}</span>
+                  </div>
+                </div>
+              <% end %>
+
+              <!-- Store 2 Marker (Uptown Store - ID 2) -->
+              <%= for %{store: s} <- @stores_data |> Enum.filter(&(&1.store.id == 2)) do %>
+                <div class="position-absolute translate-middle" style="top: 30%; left: 75%; text-align: center; z-index: 10;">
+                  <!-- Pulse Ring -->
+                  <% total = Map.get(@stores_totals, s.id, 0) %>
+                  <% pulse_class = if total < s.restock_threshold * 2, do: "text-warning", else: "text-success" %>
+                  <span class={["position-absolute translate-middle start-50 top-50 spinner-grow opacity-25", pulse_class]} style="width: 40px; height: 40px; pointer-events: none;"></span>
+                  <div class="d-inline-flex flex-column align-items-center">
+                    <div class={["badge text-white p-2 rounded-circle shadow-sm border border-light d-flex align-items-center justify-content-center", if(total < 5, do: "bg-danger", else: "bg-success")]} style="width: 38px; height: 38px;">
+                      <.icon name="hero-building-storefront" class="w-5 h-5" />
+                    </div>
+                    <span class="badge bg-dark mt-1 text-white shadow-sm font-monospace border border-secondary">
+                      <%= if total >= 100, do: "100+", else: "#{total}" %>
+                    </span>
+                    <span class="small fw-bold text-white-50 mt-1 d-block">{s.name}</span>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+
+            <!-- Legend -->
+            <div class="d-flex justify-content-center gap-4 text-white-50 small flex-wrap">
+              <span class="d-flex align-items-center"><span class="badge bg-primary rounded-circle p-1 me-2" style="width:10px; height:10px; display:inline-block;"></span> Warehouse</span>
+              <span class="d-flex align-items-center"><span class="badge bg-success rounded-circle p-1 me-2" style="width:10px; height:10px; display:inline-block;"></span> Store (Healthy)</span>
+              <span class="d-flex align-items-center"><span class="badge bg-danger rounded-circle p-1 me-2" style="width:10px; height:10px; display:inline-block;"></span> Store (Low Stock / Empty)</span>
+            </div>
           </div>
         </div>
 
