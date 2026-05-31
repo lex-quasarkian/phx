@@ -2,7 +2,9 @@ defmodule EnterpriseShopWeb.ErrorJSONTest do
   use EnterpriseShopWeb.ConnCase, async: true
 
   test "renders 404" do
-    assert EnterpriseShopWeb.ErrorJSON.render("404.json", %{}) == %{errors: %{detail: "Not Found"}}
+    assert EnterpriseShopWeb.ErrorJSON.render("404.json", %{}) == %{
+             errors: %{detail: "Not Found"}
+           }
   end
 
   test "renders 500" do
