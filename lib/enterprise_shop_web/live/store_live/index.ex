@@ -106,8 +106,10 @@ defmodule EnterpriseShopWeb.StoreLive.Index do
         <div class="row align-items-center mb-4 pb-3 border-bottom">
           <div class="col-md-6">
             <h1 class="display-5 fw-bold text-dark">Storefront Catalog</h1>
+            
             <p class="text-muted mb-0">Browse and purchase products from our local stores.</p>
           </div>
+          
           <div class="col-md-6 text-md-end mt-3 mt-md-0">
             <.link navigate={~p"/cart"} class="btn btn-outline-primary position-relative px-4 py-2">
               <.icon name="hero-shopping-cart" class="w-5 h-5 me-2 align-text-bottom" /> Shopping Cart
@@ -121,8 +123,7 @@ defmodule EnterpriseShopWeb.StoreLive.Index do
             </.link>
           </div>
         </div>
-        
-    <!-- Store Switcher -->
+        <!-- Store Switcher -->
         <div class="card mb-4 border-0 shadow-sm bg-light">
           <div class="card-body py-3 px-4 d-flex align-items-center justify-content-between flex-wrap gap-3">
             <div class="d-flex align-items-center">
@@ -134,7 +135,7 @@ defmodule EnterpriseShopWeb.StoreLive.Index do
                 </strong>
               </div>
             </div>
-
+            
             <%= if @stores != [] do %>
               <form phx-change="select_store" class="d-flex align-items-center">
                 <label for="store_id" class="me-2 mb-0 text-muted small">Switch Store:</label>
@@ -152,8 +153,7 @@ defmodule EnterpriseShopWeb.StoreLive.Index do
             <% end %>
           </div>
         </div>
-        
-    <!-- Product Grid -->
+        <!-- Product Grid -->
         <%= if @current_store do %>
           <div id="products-grid" class="row row-cols-1 row-cols-md-3 g-4" phx-update="stream">
             <div :for={{id, product} <- @streams.products} id={id} class="col">
@@ -161,21 +161,22 @@ defmodule EnterpriseShopWeb.StoreLive.Index do
                 <div class="card-body d-flex flex-column p-4">
                   <div class="d-flex justify-content-between align-items-start mb-3">
                     <h5 class="card-title fw-bold mb-0 text-dark">{product.name}</h5>
-                    <span class="badge bg-light text-primary font-monospace">{product.sku}</span>
+                     <span class="badge bg-light text-primary font-monospace">{product.sku}</span>
                   </div>
-
+                  
                   <p class="card-text text-muted flex-grow-1 small">
                     This premium product is available for immediate pick-up or shipment.
                   </p>
-
+                  
                   <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
                     <div>
                       <span class="text-muted small d-block">Price:</span>
                       <strong class="fs-5 text-dark">${product.price}</strong>
                     </div>
+                    
                     <div class="text-end">
-                      <span class="text-muted small d-block">Stock:</span>
-                      <% stock_qty = Map.get(@inventory, product.id, 0) %>
+                      <span class="text-muted small d-block">Stock:</span> <% stock_qty =
+                        Map.get(@inventory, product.id, 0) %>
                       <%= cond do %>
                         <% stock_qty == 0 -> %>
                           <span class="badge bg-danger">Out of Stock</span>
@@ -186,7 +187,7 @@ defmodule EnterpriseShopWeb.StoreLive.Index do
                       <% end %>
                     </div>
                   </div>
-
+                  
                   <div class="mt-4">
                     <%= if stock_qty > 0 do %>
                       <button
@@ -215,6 +216,7 @@ defmodule EnterpriseShopWeb.StoreLive.Index do
           <div class="alert alert-warning text-center py-4" role="alert">
             <.icon name="hero-exclamation-triangle" class="w-8 h-8 text-warning mb-2" />
             <h4 class="alert-heading">No Stores Configured!</h4>
+            
             <p class="mb-0">Please run seeds to set up initial enterprise stores.</p>
           </div>
         <% end %>

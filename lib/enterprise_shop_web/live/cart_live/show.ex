@@ -144,16 +144,16 @@ defmodule EnterpriseShopWeb.CartLive.Show do
             <h1 class="display-6 fw-bold text-dark">Shopping Cart</h1>
           </div>
         </div>
-
+        
         <%= if @cart_items == [] do %>
           <div class="card border-0 shadow-sm py-5 text-center">
             <div class="card-body">
               <.icon name="hero-shopping-bag" class="w-16 h-16 text-muted mb-3" />
               <h3 class="fw-bold text-dark">Your cart is empty</h3>
+              
               <p class="text-muted mb-4">Add some items from our catalog to get started.</p>
-              <.link navigate={~p"/store"} class="btn btn-primary px-4 py-2">
-                Continue Shopping
-              </.link>
+              
+              <.link navigate={~p"/store"} class="btn btn-primary px-4 py-2">Continue Shopping</.link>
             </div>
           </div>
         <% else %>
@@ -162,25 +162,32 @@ defmodule EnterpriseShopWeb.CartLive.Show do
             <div class="col-lg-8">
               <div class="card border-0 shadow-sm p-4">
                 <h4 class="fw-bold text-dark mb-4">Items in Cart</h4>
+                
                 <div class="table-responsive">
                   <table class="table align-middle">
                     <thead>
                       <tr class="text-muted small">
                         <th>Product Details</th>
+                        
                         <th class="text-center">Quantity</th>
+                        
                         <th class="text-end">Subtotal</th>
+                        
                         <th></th>
                       </tr>
                     </thead>
+                    
                     <tbody>
                       <%= for item <- @cart_items do %>
                         <tr id={"cart-item-#{item.product.id}"}>
                           <td>
                             <h6 class="fw-bold text-dark mb-1">{item.product.name}</h6>
+                            
                             <span class="badge bg-light text-primary font-monospace small">
                               {item.product.sku}
                             </span>
                           </td>
+                          
                           <td>
                             <div class="d-flex align-items-center justify-content-center">
                               <button
@@ -191,8 +198,7 @@ defmodule EnterpriseShopWeb.CartLive.Show do
                                 style="width: 28px; height: 28px;"
                               >
                                 <.icon name="hero-minus" class="w-3 h-3" />
-                              </button>
-                              <span class="mx-3 fw-bold">{item.quantity}</span>
+                              </button> <span class="mx-3 fw-bold">{item.quantity}</span>
                               <button
                                 phx-click="increment_qty"
                                 phx-value-product-id={item.product.id}
@@ -204,7 +210,9 @@ defmodule EnterpriseShopWeb.CartLive.Show do
                               </button>
                             </div>
                           </td>
+                          
                           <td class="text-end fw-bold text-dark">${item.subtotal}</td>
+                          
                           <td class="text-end">
                             <button
                               phx-click="remove_item"
@@ -222,13 +230,11 @@ defmodule EnterpriseShopWeb.CartLive.Show do
                 </div>
               </div>
             </div>
-            
-    <!-- Order Summary & Checkout -->
+            <!-- Order Summary & Checkout -->
             <div class="col-lg-4">
               <div class="card border-0 shadow-sm p-4 bg-light">
                 <h4 class="fw-bold text-dark mb-4">Order Summary</h4>
-                
-    <!-- Store Switcher -->
+                <!-- Store Switcher -->
                 <div class="mb-4">
                   <label for="checkout_store_id" class="form-label text-muted small fw-bold">
                     Select Checkout Store:
@@ -246,12 +252,12 @@ defmodule EnterpriseShopWeb.CartLive.Show do
                     <% end %>
                   </select>
                 </div>
-
+                
                 <div class="d-flex justify-content-between mb-2">
                   <span class="text-muted">Total Price</span>
                   <strong class="fs-5 text-dark">${@total_price}</strong>
                 </div>
-
+                
                 <div class="mt-4 pt-3 border-top">
                   <button
                     phx-click="place_order"

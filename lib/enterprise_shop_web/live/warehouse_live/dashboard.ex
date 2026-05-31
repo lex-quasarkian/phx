@@ -201,8 +201,10 @@ defmodule EnterpriseShopWeb.WarehouseLive.Dashboard do
         <div class="row align-items-center mb-4 pb-3 border-bottom">
           <div class="col-md-6">
             <h1 class="display-5 fw-bold text-dark">Enterprise Dashboard</h1>
+            
             <p class="text-muted mb-0">Real-time tracking of warehouse and store inventory levels.</p>
           </div>
+          
           <div class="col-md-6 text-md-end mt-3 mt-md-0">
             <.link navigate={~p"/store"} class="btn btn-outline-primary px-4 py-2 me-2">
               <.icon name="hero-building-storefront" class="w-5 h-5 me-2 align-text-bottom" />
@@ -214,8 +216,7 @@ defmodule EnterpriseShopWeb.WarehouseLive.Dashboard do
             </span>
           </div>
         </div>
-        
-    <!-- Interactive Map Section -->
+        <!-- Interactive Map Section -->
         <div
           class="card border-0 shadow-lg mb-5 text-white overflow-hidden"
           style="background: linear-gradient(135deg, #111827 0%, #1f2937 100%); min-height: 380px; position: relative; border-radius: 16px;"
@@ -226,7 +227,7 @@ defmodule EnterpriseShopWeb.WarehouseLive.Dashboard do
             style="background-image: radial-gradient(#ffffff 1px, transparent 1px); background-size: 20px 20px; top:0; left:0; width:100%; height:100%;"
           >
           </div>
-
+          
           <div
             class="card-body p-4 d-flex flex-column justify-content-between position-relative"
             style="z-index: 2;"
@@ -236,12 +237,12 @@ defmodule EnterpriseShopWeb.WarehouseLive.Dashboard do
                 <.icon name="hero-map" class="w-6 h-6 text-primary me-2" />
                 Live Logistics & Fulfillment Map
               </h4>
+              
               <p class="text-muted small mb-0">
                 Visualizing supply chains, replenishment routes, and stock levels.
               </p>
             </div>
-            
-    <!-- Visual Map Canvas -->
+            <!-- Visual Map Canvas -->
             <div
               class="flex-grow-1 w-100 my-3"
               style="position: relative; height: 260px; background: rgba(255, 255, 255, 0.02); border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.05); overflow: hidden;"
@@ -275,8 +276,7 @@ defmodule EnterpriseShopWeb.WarehouseLive.Dashboard do
                   />
                 <% end %>
               </svg>
-              
-    <!-- Central Warehouse Marker (Central Distribution Center) -->
+              <!-- Central Warehouse Marker (Central Distribution Center) -->
               <%= for %{warehouse: w} <- @warehouses_data do %>
                 <div
                   class="position-absolute translate-middle"
@@ -296,16 +296,14 @@ defmodule EnterpriseShopWeb.WarehouseLive.Dashboard do
                     >
                       <.icon name="hero-archive-box" class="w-6 h-6" />
                     </div>
-                    <% wh_total = Map.get(@warehouses_totals, w.id, 0) %>
+                     <% wh_total = Map.get(@warehouses_totals, w.id, 0) %>
                     <span class="badge bg-dark mt-1 text-white shadow-sm font-monospace border border-secondary">
                       {if wh_total >= 100, do: "100+", else: "#{wh_total}"}
-                    </span>
-                    <span class="small fw-bold text-white-50 mt-1 d-block">{w.name}</span>
+                    </span> <span class="small fw-bold text-white-50 mt-1 d-block">{w.name}</span>
                   </div>
                 </div>
               <% end %>
-              
-    <!-- Store 1 Marker (First Store in List) -->
+              <!-- Store 1 Marker (First Store in List) -->
               <%= if store_data1 = Enum.at(@stores_data, 0) do %>
                 <% %{store: s} = store_data1 %>
                 <div
@@ -313,8 +311,7 @@ defmodule EnterpriseShopWeb.WarehouseLive.Dashboard do
                   style="top: 75%; left: 30%; text-align: center; z-index: 10;"
                 >
                   <!-- Pulse Ring -->
-                  <% total = Map.get(@stores_totals, s.id, 0) %>
-                  <% pulse_class =
+                  <% total = Map.get(@stores_totals, s.id, 0) %> <% pulse_class =
                     if total < s.restock_threshold * 2, do: "text-warning", else: "text-success" %>
                   <span
                     class={[
@@ -334,15 +331,14 @@ defmodule EnterpriseShopWeb.WarehouseLive.Dashboard do
                     >
                       <.icon name="hero-building-storefront" class="w-5 h-5" />
                     </div>
+                    
                     <span class="badge bg-dark mt-1 text-white shadow-sm font-monospace border border-secondary">
                       {if total >= 100, do: "100+", else: "#{total}"}
-                    </span>
-                    <span class="small fw-bold text-white-50 mt-1 d-block">{s.name}</span>
+                    </span> <span class="small fw-bold text-white-50 mt-1 d-block">{s.name}</span>
                   </div>
                 </div>
               <% end %>
-              
-    <!-- Store 2 Marker (Second Store in List) -->
+              <!-- Store 2 Marker (Second Store in List) -->
               <%= if store_data2 = Enum.at(@stores_data, 1) do %>
                 <% %{store: s} = store_data2 %>
                 <div
@@ -350,8 +346,7 @@ defmodule EnterpriseShopWeb.WarehouseLive.Dashboard do
                   style="top: 30%; left: 75%; text-align: center; z-index: 10;"
                 >
                   <!-- Pulse Ring -->
-                  <% total = Map.get(@stores_totals, s.id, 0) %>
-                  <% pulse_class =
+                  <% total = Map.get(@stores_totals, s.id, 0) %> <% pulse_class =
                     if total < s.restock_threshold * 2, do: "text-warning", else: "text-success" %>
                   <span
                     class={[
@@ -371,16 +366,15 @@ defmodule EnterpriseShopWeb.WarehouseLive.Dashboard do
                     >
                       <.icon name="hero-building-storefront" class="w-5 h-5" />
                     </div>
+                    
                     <span class="badge bg-dark mt-1 text-white shadow-sm font-monospace border border-secondary">
                       {if total >= 100, do: "100+", else: "#{total}"}
-                    </span>
-                    <span class="small fw-bold text-white-50 mt-1 d-block">{s.name}</span>
+                    </span> <span class="small fw-bold text-white-50 mt-1 d-block">{s.name}</span>
                   </div>
                 </div>
               <% end %>
             </div>
-            
-    <!-- Legend -->
+            <!-- Legend -->
             <div class="d-flex justify-content-center gap-4 text-white-50 small flex-wrap">
               <span class="d-flex align-items-center">
                 <span
@@ -409,7 +403,7 @@ defmodule EnterpriseShopWeb.WarehouseLive.Dashboard do
             </div>
           </div>
         </div>
-
+        
         <div class="row g-4">
           <!-- Warehouses Inventory column -->
           <div class="col-lg-6">
@@ -418,8 +412,7 @@ defmodule EnterpriseShopWeb.WarehouseLive.Dashboard do
                 <.icon name="hero-archive-box" class="w-6 h-6 text-primary me-2" />
                 Warehouses (Wholesale)
               </h3>
-              
-    <!-- Product Highlight Selector (Square Buttons with Pictures) -->
+              <!-- Product Highlight Selector (Square Buttons with Pictures) -->
               <div class="mb-4 bg-light p-3 rounded shadow-sm border border-light">
                 <span class="text-muted small fw-bold d-block mb-2">Highlight Product Type:</span>
                 <div class="d-flex align-items-center gap-3">
@@ -444,8 +437,7 @@ defmodule EnterpriseShopWeb.WarehouseLive.Dashboard do
                       alt="Pointer"
                     />
                   </button>
-                  
-    <!-- Anti-Gravity Boots Button -->
+                  <!-- Anti-Gravity Boots Button -->
                   <button
                     phx-click="toggle_highlight"
                     phx-value-product-id={@boots_id}
@@ -466,8 +458,7 @@ defmodule EnterpriseShopWeb.WarehouseLive.Dashboard do
                       alt="Boots"
                     />
                   </button>
-                  
-    <!-- Wormhole Generator Button -->
+                  <!-- Wormhole Generator Button -->
                   <button
                     phx-click="toggle_highlight"
                     phx-value-product-id={@generator_id}
@@ -488,7 +479,6 @@ defmodule EnterpriseShopWeb.WarehouseLive.Dashboard do
                       alt="Generator"
                     />
                   </button>
-
                   <%= if @selected_product_id do %>
                     <button
                       phx-click="clear_highlight"
@@ -500,27 +490,29 @@ defmodule EnterpriseShopWeb.WarehouseLive.Dashboard do
                   <% end %>
                 </div>
               </div>
-
+              
               <%= if @warehouses_data == [] do %>
-                <div class="text-center py-5 text-muted">
-                  No warehouses registered.
-                </div>
+                <div class="text-center py-5 text-muted">No warehouses registered.</div>
               <% else %>
                 <%= for %{warehouse: w, items: items} <- @warehouses_data do %>
                   <div class="card mb-4 border border-light shadow-sm" id={"warehouse-card-#{w.id}"}>
                     <div class="card-header bg-white py-3">
                       <h5 class="fw-bold text-dark mb-0">{w.name}</h5>
                     </div>
+                    
                     <div class="card-body p-0">
                       <div class="table-responsive">
                         <table class="table align-middle mb-0">
                           <thead class="table-light text-muted small">
                             <tr>
                               <th class="ps-3">Product</th>
+                              
                               <th>SKU</th>
+                              
                               <th class="text-end pe-3">In Stock</th>
                             </tr>
                           </thead>
+                          
                           <tbody>
                             <%= if items == [] do %>
                               <tr>
@@ -545,14 +537,15 @@ defmodule EnterpriseShopWeb.WarehouseLive.Dashboard do
                                       class="rounded border shadow-sm"
                                       style="width: 28px; height: 28px; object-fit: cover;"
                                       alt=""
-                                    />
-                                    <span>{item.product.name}</span>
+                                    /> <span>{item.product.name}</span>
                                   </td>
+                                  
                                   <td>
                                     <span class="badge bg-light text-secondary font-monospace">
                                       {item.product.sku}
                                     </span>
                                   </td>
+                                  
                                   <td class="text-end pe-3 fw-bold fs-6">
                                     <%= if item.quantity == 0 do %>
                                       <span class="text-danger">0</span>
@@ -572,39 +565,42 @@ defmodule EnterpriseShopWeb.WarehouseLive.Dashboard do
               <% end %>
             </div>
           </div>
-          
-    <!-- Stores Inventory column -->
+          <!-- Stores Inventory column -->
           <div class="col-lg-6">
             <div class="card border-0 shadow-sm p-4 h-100">
               <h3 class="fw-bold text-dark mb-4 d-flex align-items-center">
                 <.icon name="hero-building-storefront" class="w-6 h-6 text-primary me-2" />
                 Retail Stores (Shopfloor)
               </h3>
-
+              
               <%= if @stores_data == [] do %>
-                <div class="text-center py-5 text-muted">
-                  No stores registered.
-                </div>
+                <div class="text-center py-5 text-muted">No stores registered.</div>
               <% else %>
                 <%= for %{store: s, items: items} <- @stores_data do %>
                   <div class="card mb-4 border border-light shadow-sm" id={"store-card-#{s.id}"}>
                     <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
                       <h5 class="fw-bold text-dark mb-0">{s.name}</h5>
+                      
                       <span class="badge bg-light text-muted small">
                         Restock threshold: {s.restock_threshold}
                       </span>
                     </div>
+                    
                     <div class="card-body p-0">
                       <div class="table-responsive">
                         <table class="table align-middle mb-0">
                           <thead class="table-light text-muted small">
                             <tr>
                               <th class="ps-3">Product</th>
+                              
                               <th>SKU</th>
+                              
                               <th class="text-end">In Stock</th>
+                              
                               <th class="text-end pe-3">Actions</th>
                             </tr>
                           </thead>
+                          
                           <tbody>
                             <%= if items == [] do %>
                               <tr>
@@ -629,14 +625,15 @@ defmodule EnterpriseShopWeb.WarehouseLive.Dashboard do
                                       class="rounded border shadow-sm"
                                       style="width: 28px; height: 28px; object-fit: cover;"
                                       alt=""
-                                    />
-                                    <span>{item.product.name}</span>
+                                    /> <span>{item.product.name}</span>
                                   </td>
+                                  
                                   <td>
                                     <span class="badge bg-light text-secondary font-monospace">
                                       {item.product.sku}
                                     </span>
                                   </td>
+                                  
                                   <td class="text-end fw-bold fs-6">
                                     <%= cond do %>
                                       <% item.quantity == 0 -> %>
@@ -647,6 +644,7 @@ defmodule EnterpriseShopWeb.WarehouseLive.Dashboard do
                                         <span class="text-success">{item.quantity}</span>
                                     <% end %>
                                   </td>
+                                  
                                   <td class="text-end pe-3">
                                     <button
                                       phx-click="manual_restock"
