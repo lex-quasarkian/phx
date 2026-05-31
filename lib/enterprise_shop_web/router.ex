@@ -4,6 +4,7 @@ defmodule EnterpriseShopWeb.Router do
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
+    plug EnterpriseShopWeb.Plugs.EnsureSessionId
     plug :fetch_live_flash
     plug :put_root_layout, html: {EnterpriseShopWeb.Layouts, :root}
     plug :protect_from_forgery
@@ -18,12 +19,17 @@ defmodule EnterpriseShopWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+
+    live "/store", StoreLive.Index, :index
+    live "/cart", CartLive.Show, :show
+    live "/warehouse/dashboard", WarehouseLive.Dashboard, :index
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", EnterpriseShopWeb do
-  #   pipe_through :api
-  # end
+  scope "/api/v1", EnterpriseShopWeb do
+    pipe_through :api
+
+    post "/warehouse/restock", API.WarehouseController, :restock
+  end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:enterprise_shop, :dev_routes) do
