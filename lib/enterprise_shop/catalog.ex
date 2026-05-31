@@ -11,7 +11,9 @@ defmodule EnterpriseShop.Catalog do
   Returns the list of products.
   """
   def list_products do
-    Repo.all(Product)
+    Product
+    |> order_by(asc: :name)
+    |> Repo.all()
   end
 
   @doc """

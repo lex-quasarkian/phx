@@ -114,6 +114,7 @@ defmodule EnterpriseShopWeb.CartLive.Show do
         }
       end)
       |> Enum.filter(&(&1.product != nil))
+      |> Enum.sort_by(& &1.product.name)
 
     total_price =
       Enum.reduce(cart_items, Decimal.new("0.00"), fn item, acc ->

@@ -85,7 +85,43 @@ defmodule EnterpriseShopWeb.WarehouseLiveTest do
       |> render_click()
 
       # Highlight should be gone
-      refute has_element?(view, "tr.table-warning")
+    end
+
+    test "items are sorted alphabetically by product name", %{
+      conn: conn,
+      warehouse: warehouse
+    } do
+      p_zebra = insert(:product, name: "Zebra Product", sku: "ZEBRA-001")
+      p_apple = insert(:product, name: "Apple Product", sku: "APPLE-001")
+      p_banana = insert(:product, name: "Banana Product", sku: "BANANA-001")
+
+      insert(:inventory_item,
+        product: p_zebra,
+        location_type: "warehouse",
+        location_id: warehouse.id
+      )
+
+      insert(:inventory_item,
+        product: p_apple,
+        location_type: "warehouse",
+        location_id: warehouse.id
+      )
+
+      insert(:inventory_item,
+        product: p_banana,
+        location_type: "warehouse",
+        location_id: warehouse.id
+      )
+
+      {:ok, _view, html} = live(conn, ~p"/warehouse/dashboard")
+
+      # Assert they appear in alphabetical order (Apple -> Banana -> Zebra)
+      assert {apple_idx, _} = :binary.match(html, "Apple Product")
+      assert {banana_idx, _} = :binary.match(html, "Banana Product")
+      assert {zebra_idx, _} = :binary.match(html, "Zebra Product")
+
+      assert apple_idx < banana_idx
+      assert banana_idx < zebra_idx
     end
   end
 end

@@ -103,7 +103,9 @@ defmodule EnterpriseShopWeb.WarehouseLive.Dashboard do
     warehouses_data =
       Enum.map(warehouses, fn w ->
         w_items =
-          Enum.filter(items, &(&1.location_type == "warehouse" and &1.location_id == w.id))
+          items
+          |> Enum.filter(&(&1.location_type == "warehouse" and &1.location_id == w.id))
+          |> Enum.sort_by(& &1.product.name)
 
         %{warehouse: w, items: w_items}
       end)
@@ -112,7 +114,9 @@ defmodule EnterpriseShopWeb.WarehouseLive.Dashboard do
     stores_data =
       Enum.map(stores, fn s ->
         s_items =
-          Enum.filter(items, &(&1.location_type == "store" and &1.location_id == s.id))
+          items
+          |> Enum.filter(&(&1.location_type == "store" and &1.location_id == s.id))
+          |> Enum.sort_by(& &1.product.name)
 
         %{store: s, items: s_items}
       end)
