@@ -30,6 +30,38 @@ defmodule EnterpriseShopWeb.WarehouseLive.Dashboard do
     {:noreply, socket}
   end
 
+  @impl true
+  def handle_event("manual_restock", %{"store-id" => store_id, "product-id" => product_id}, socket) do
+    store_id = String.to_integer(store_id)
+    product_id = String.to_integer(product_id)
+
+    store = Inventory.get_store!(store_id)
+
+    # Find the corresponding warehouse for the store (same enterprise)
+    warehouse =
+      Repo.one(
+        from(w in EnterpriseShop.Schemas.Warehouse,
+          where: w.enterprise_id == ^store.enterprise_id,
+          limit: 1
+        )
+      )
+
+    if warehouse == nil do
+      {:noreply, put_flash(socket, :error, "No warehouse configured for this store's enterprise.")}
+    else
+      case EnterpriseShop.UseCases.RestockStore.execute(warehouse.id, store_id, product_id, 10) do
+        {:ok, :restocked} ->
+          {:noreply, put_flash(socket, :info, "Successfully restocked 10 units from warehouse!")}
+
+        {:error, :insufficient_warehouse_stock} ->
+          {:noreply, put_flash(socket, :error, "Restock failed: Insufficient warehouse inventory!")}
+
+        {:error, reason} ->
+          {:noreply, put_flash(socket, :error, "Restock failed: #{reason}")}
+      end
+    end
+  end
+
   # Helper to load dashboard inventory data
   defp assign_dashboard_data(socket) do
     warehouses = Inventory.list_warehouses()
@@ -180,13 +212,14 @@ defmodule EnterpriseShopWeb.WarehouseLive.Dashboard do
                             <tr>
                               <th class="ps-3">Product</th>
                               <th>SKU</th>
-                              <th class="text-end pe-3">In Stock</th>
+                              <th class="text-end">In Stock</th>
+                              <th class="text-end pe-3">Actions</th>
                             </tr>
                           </thead>
                           <tbody>
                             <%= if items == [] do %>
                               <tr>
-                                <td colspan="3" class="text-center py-4 text-muted small">
+                                <td colspan="4" class="text-center py-4 text-muted small">
                                   No inventory recorded.
                                 </td>
                               </tr>
@@ -199,7 +232,7 @@ defmodule EnterpriseShopWeb.WarehouseLive.Dashboard do
                                       {item.product.sku}
                                     </span>
                                   </td>
-                                  <td class="text-end pe-3 fw-bold fs-6">
+                                  <td class="text-end fw-bold fs-6">
                                     <%= cond do %>
                                       <% item.quantity == 0 -> %>
                                         <span class="text-danger">0 (Out of stock)</span>
@@ -208,6 +241,17 @@ defmodule EnterpriseShopWeb.WarehouseLive.Dashboard do
                                       <% true -> %>
                                         <span class="text-success">{item.quantity}</span>
                                     <% end %>
+                                  </td>
+                                  <td class="text-end pe-3">
+                                    <button
+                                      phx-click="manual_restock"
+                                      phx-value-store-id={s.id}
+                                      phx-value-product-id={item.product.id}
+                                      id={"restock-btn-#{s.id}-#{item.product.id}"}
+                                      class="btn btn-sm btn-primary py-1 px-2 d-inline-flex align-items-center"
+                                    >
+                                      <.icon name="hero-arrow-path" class="w-3 h-3 me-1" /> Restock (+10)
+                                    </button>
                                   </td>
                                 </tr>
                               <% end %>
