@@ -44,11 +44,13 @@ defmodule EnterpriseShopWeb.StoreLive.Index do
     store_id = String.to_integer(store_id)
     store = Enum.find(socket.assigns.stores, &(&1.id == store_id))
     inventory_map = get_inventory_map(store)
+    products = Catalog.list_products()
 
     {:noreply,
      socket
      |> assign(:current_store, store)
-     |> assign(:inventory, inventory_map)}
+     |> assign(:inventory, inventory_map)
+     |> stream(:products, products, reset: true)}
   end
 
   @impl true
