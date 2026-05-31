@@ -12,8 +12,12 @@ defmodule EnterpriseShop.Application do
       EnterpriseShop.Repo,
       {DNSCluster, query: Application.get_env(:enterprise_shop, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: EnterpriseShop.PubSub},
-      # Start a worker by calling: EnterpriseShop.Worker.start_link(arg)
-      # {EnterpriseShop.Worker, arg},
+      # Registry for locating Warehouse GenServer processes
+      {Registry, keys: :unique, name: EnterpriseShop.WarehouseRegistry},
+      # DynamicSupervisor to spin up Warehouse GenServers on demand
+      {DynamicSupervisor, name: EnterpriseShop.WarehouseSupervisor, strategy: :one_for_one},
+      # In-memory CartRegistry to track active customer carts
+      {EnterpriseShop.Sales.CartRegistry, name: EnterpriseShop.Sales.CartRegistry},
       # Start to serve requests, typically the last entry
       EnterpriseShopWeb.Endpoint
     ]
