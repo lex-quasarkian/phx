@@ -9,7 +9,8 @@ defmodule EnterpriseShop.Domain.StoreTest do
 
       assert Store.needs_restock?(store, "prod_1") == true
       assert Store.needs_restock?(store, "prod_2") == false
-      assert Store.needs_restock?(store, "non_existent") == true # 0 < 5
+      # 0 < 5
+      assert Store.needs_restock?(store, "non_existent") == true
     end
 
     test "deduct_stock/3 reduces inventory when sufficient stock exists" do

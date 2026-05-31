@@ -29,7 +29,8 @@ defmodule EnterpriseShop.Domain.Order do
   @doc """
   Triggers a state transition for the order based on an action.
   """
-  @spec transition(t(), :register | :grant | :ship | :cancel) :: {:ok, t()} | {:error, :invalid_transition}
+  @spec transition(t(), :register | :grant | :ship | :cancel) ::
+          {:ok, t()} | {:error, :invalid_transition}
   def transition(%__MODULE__{state: :new} = order, :register) do
     {:ok, %{order | state: :registered}}
   end
